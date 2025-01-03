@@ -1,14 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   loadCaptchaEnginge,
   LoadCanvasTemplate,
   validateCaptcha,
 } from "react-simple-captcha";
+import { AuthContext } from "../../Auth/AuthProvider/AuthProvider";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   document.title = "Bistro Bosss | Login";
   const [disabled, setDisabled] = useState(true);
   const captchaRef = useRef(null);
+  const { signIn, googleSing } = useContext(AuthContext);
 
   useEffect(() => {
     loadCaptchaEnginge(6);
@@ -20,12 +23,24 @@ export default function Login() {
     const email = form.email.value;
     const password = form.password.value;
 
-    console.log(email, password);
+    console.log({ email, password });
+
+    // Sing in
+    signIn(email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        console.log(user);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode + " and " + errorMessage);
+      });
   };
 
   const handleCaptcha = () => {
     const user_captcha_value = captchaRef.current.value;
-    console.log(user_captcha_value);
 
     if (validateCaptcha(user_captcha_value)) {
       setDisabled(false);
@@ -34,38 +49,50 @@ export default function Login() {
     }
   };
 
+  const handleGoogleSign = () => {
+    // googleSignIn
+    googleSing()
+      .then((user) => {
+        console.log(user.user);
+      })
+      .catch((error) => {
+        console.log(error.message);
+        console.log(error.code);
+      });
+  };
+
   return (
-    <div className="max-w-[23rem] mx-auto p-6 my-16 border border-yellow-400 shadow-xl rounded-md">
-      <h2 className="text-2xl font-semibold text-center">Login</h2>
+    <div className="max-w-[30rem] mx-auto p-6 my-16 border-2 border-yellow-400 shadow-xl rounded-md">
+      <h2 className="text-4xl font-semibold text-center">Login</h2>
       <form onSubmit={handleSubmit}>
         {/* email */}
-        <div className="flex flex-col max-w-xs">
+        <div className="flex flex-col ">
           <label htmlFor="email" className="text-xl">
             Email
           </label>
           <input
             type="email"
             name="email"
-            id=""
+            id="email"
             placeholder="email here"
             className="px-4 py-2 border rounded-lg"
           />
         </div>
         {/* password */}
-        <div className="flex flex-col max-w-xs">
+        <div className="flex flex-col ">
           <label htmlFor="email" className="text-xl">
             Password
           </label>
           <input
             type="password"
             name="password"
-            id=""
+            id="password"
             placeholder="password here"
             className="px-4 py-2 border rounded-lg"
           />
         </div>
         {/* Captcha*/}
-        <div className="flex flex-col max-w-xs">
+        <div className="flex flex-col ">
           <div className="p-2">
             <LoadCanvasTemplate />
           </div>
@@ -79,19 +106,21 @@ export default function Login() {
           />
           <button
             onClick={handleCaptcha}
-            className="btn btn-xs btn-primary my-2"
+            className="btn btn-xs bg-yellow-400 hover:bg-yellow-500 my-2"
           >
             check
           </button>
         </div>
 
         <div className="py-4">
-          <button
-            disabled={disabled}
-            className="w-full disabled:bg-gray-400 bg-yellow-500 text-white font-semibold py-2 rounded-md hover:bg-yellow-600 transition"
-          >
-            Login
-          </button>
+          <Link to={"/"}>
+            <button
+              disabled={disabled}
+              className="w-full disabled:bg-gray-400 bg-yellow-500 text-white font-semibold py-2 rounded-md hover:bg-yellow-600 transition"
+            >
+              Login
+            </button>
+          </Link>
         </div>
 
         {/* Links */}
@@ -114,7 +143,10 @@ export default function Login() {
               className="h-6 w-6"
             />
           </button>
-          <button className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">
+          <button
+            onClick={handleGoogleSign}
+            className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition"
+          >
             <img
               src="https://img.icons8.com/ios-filled/50/google-logo.png"
               alt="Google"
