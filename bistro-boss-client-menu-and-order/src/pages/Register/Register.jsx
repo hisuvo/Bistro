@@ -1,25 +1,62 @@
 import { AuthContext } from "../../Auth/AuthProvider/AuthProvider";
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
+import { Store } from "react-notifications-component";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 function Register() {
   // react hook form use here
-  const { createUser, googleSing } = useContext(AuthContext);
+  const { createUser, googleSing, updateUserProfise } = useContext(AuthContext);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const navigate = useNavigate();
 
   const onSubmit = (data) => {
-    // console.log(data);
+    console.log(data);
     createUser(data.email, data.password)
       .then((result) => {
         console.log(result.user);
+        // update profile
+        updateUserProfise(data.name, data.url)
+          .then((result) => {
+            console.log(result);
+            toast.success("update done");
+          })
+          .catch((error) => {
+            toast.error(error.code);
+          });
+        Store.addNotification({
+          title: "Wonderful!",
+          message: `${result.user} && "teodosii@react-notifications-component"`,
+          type: "success",
+          insert: "top",
+          container: "top-right",
+          animationIn: ["animate__animated", "animate__fadeIn"],
+          animationOut: ["animate__animated", "animate__fadeOut"],
+          dismiss: {
+            duration: 5000,
+            onScreen: true,
+          },
+        });
+        navigate("/");
       })
       .catch((error) => {
-        alert(error.message);
-        alert(error.code);
+        Store.addNotification({
+          title: "Error",
+          message: `${error.message} && ${error.code} `,
+          type: "danger",
+          insert: "top",
+          container: "top-center",
+          dismiss: {
+            duration: 2000,
+            onScreen: true,
+            pauseOnHover: true,
+          },
+        });
       });
   };
 
@@ -97,6 +134,25 @@ function Register() {
               />
               {errors.name && (
                 <span className="text-red-500">Name field is required</span>
+              )}
+            </div>
+            {/* photo Input */}
+            <div>
+              <label htmlFor="url" className="block font-medium text-gray-700">
+                Photo url
+              </label>
+              <input
+                type="url"
+                id="url"
+                {...register("url", { required: true })}
+                name="url"
+                placeholder="Type here img url"
+                className="mt-2 w-full border rounded-md px-4 py-2 focus:ring-2 focus:ring-yellow-400"
+              />
+              {errors.url && (
+                <span className="text-red-500">
+                  Photo Url field is required
+                </span>
               )}
             </div>
             {/* Email Input */}

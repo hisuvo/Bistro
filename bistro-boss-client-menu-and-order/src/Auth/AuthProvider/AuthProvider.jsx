@@ -8,6 +8,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
+  updateProfile,
 } from "firebase/auth";
 
 export const AuthContext = createContext(null);
@@ -39,6 +40,14 @@ export default function AuthProvider({ children }) {
     return signInWithPopup(auth, provider);
   };
 
+  // Update Profile
+  const updateUserProfise = (name, url) => {
+    return updateProfile(auth.currentUser, {
+      displayName: name,
+      photoURL: url,
+    });
+  };
+
   //   Observer function
   useEffect(() => {
     const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -46,7 +55,6 @@ export default function AuthProvider({ children }) {
         setUser(currentUser);
         setLoading(false);
       } else {
-        console.log(`user is singed out`);
         setUser(null);
         setLoading(true);
       }
@@ -55,7 +63,15 @@ export default function AuthProvider({ children }) {
     return () => unSubscribe();
   }, []);
 
-  const authInfo = { user, loading, createUser, signIn, singOut, googleSing };
+  const authInfo = {
+    user,
+    loading,
+    createUser,
+    signIn,
+    singOut,
+    googleSing,
+    updateUserProfise,
+  };
 
   return (
     <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>

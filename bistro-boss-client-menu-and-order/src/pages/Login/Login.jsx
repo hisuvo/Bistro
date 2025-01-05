@@ -5,13 +5,20 @@ import {
   validateCaptcha,
 } from "react-simple-captcha";
 import { AuthContext } from "../../Auth/AuthProvider/AuthProvider";
-import { Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function Login() {
   document.title = "Bistro Bosss | Login";
   const [disabled, setDisabled] = useState(true);
   const captchaRef = useRef(null);
   const { signIn, googleSing } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || "/";
+  console.log(from);
+  console.log("order card location", location);
 
   useEffect(() => {
     loadCaptchaEnginge(6);
@@ -23,24 +30,23 @@ export default function Login() {
     const email = form.email.value;
     const password = form.password.value;
 
-    console.log({ email, password });
-
     // Sing in
     signIn(email, password)
       .then((userCredential) => {
-        // Signed in
+        // eslint-disable-next-line no-unused-vars
         const user = userCredential.user;
-        console.log(user);
+        toast.success(" User Loning success");
+        navigate(from);
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode + " and " + errorMessage);
+        toast.error(`${error.code}`);
       });
   };
 
-  const handleCaptcha = () => {
-    const user_captcha_value = captchaRef.current.value;
+  const handleCaptcha = (e) => {
+    // const user_captcha_value = captchaRef.current.value;
+    const user_captcha_value = e.target.value;
+    console.log(user_captcha_value);
 
     if (validateCaptcha(user_captcha_value)) {
       setDisabled(false);
@@ -54,6 +60,7 @@ export default function Login() {
     googleSing()
       .then((user) => {
         console.log(user.user);
+        navigate(from);
       })
       .catch((error) => {
         console.log(error.message);
@@ -84,7 +91,7 @@ export default function Login() {
             Password
           </label>
           <input
-            type="password"
+            type="text"
             name="password"
             id="password"
             placeholder="password here"
@@ -100,27 +107,26 @@ export default function Login() {
           <input
             type="text"
             name="captcha"
+            onBlur={handleCaptcha}
             ref={captchaRef}
             placeholder="enter the above text"
             className="px-4 py-2 border rounded-lg"
           />
-          <button
-            onClick={handleCaptcha}
+          {/* <button
+            // onClick={handleCaptcha}
             className="btn btn-xs bg-yellow-400 hover:bg-yellow-500 my-2"
           >
             check
-          </button>
+          </button> */}
         </div>
 
         <div className="py-4">
-          <Link to={"/"}>
-            <button
-              disabled={disabled}
-              className="w-full disabled:bg-gray-400 bg-yellow-500 text-white font-semibold py-2 rounded-md hover:bg-yellow-600 transition"
-            >
-              Login
-            </button>
-          </Link>
+          <input
+            disabled={disabled}
+            className="w-full disabled:bg-gray-400 bg-yellow-500 text-white font-semibold py-2 rounded-md hover:bg-yellow-600 transition"
+            type="submit"
+            value="Login"
+          />
         </div>
 
         {/* Links */}
