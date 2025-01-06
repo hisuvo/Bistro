@@ -17,8 +17,6 @@ export default function Login() {
   const location = useLocation();
 
   const from = location.state?.from?.pathname || "/";
-  console.log(from);
-  console.log("order card location", location);
 
   useEffect(() => {
     loadCaptchaEnginge(6);

@@ -1,12 +1,14 @@
 import { AuthContext } from "../../Auth/AuthProvider/AuthProvider";
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
-import { Store } from "react-notifications-component";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import Swal from "sweetalert2";
+import useAxiosPublice from "../../hooks/useAxiosPublice";
 
 function Register() {
   // react hook form use here
+  const axiosPublice = useAxiosPublice();
   const { createUser, googleSing, updateUserProfise } = useContext(AuthContext);
   const {
     register,
@@ -16,47 +18,24 @@ function Register() {
   const navigate = useNavigate();
 
   const onSubmit = (data) => {
-    console.log(data);
     createUser(data.email, data.password)
-      .then((result) => {
-        console.log(result.user);
+      .then(() => {
         // update profile
-        updateUserProfise(data.name, data.url)
-          .then((result) => {
-            console.log(result);
-            toast.success("update done");
-          })
-          .catch((error) => {
-            toast.error(error.code);
-          });
-        Store.addNotification({
-          title: "Wonderful!",
-          message: `${result.user} && "teodosii@react-notifications-component"`,
-          type: "success",
-          insert: "top",
-          container: "top-right",
-          animationIn: ["animate__animated", "animate__fadeIn"],
-          animationOut: ["animate__animated", "animate__fadeOut"],
-          dismiss: {
-            duration: 5000,
-            onScreen: true,
-          },
+        updateUserProfise(data.name, data.url).then(() => {
+          // sent user info to the db
+          axiosPublice
+            .post("/users", { name: data.name, email: data.email })
+            .then((res) => {
+              if (res.data.insertedId) {
+                toast.success("User set into the server done");
+                navigate("/");
+              }
+            });
         });
-        navigate("/");
       })
       .catch((error) => {
-        Store.addNotification({
-          title: "Error",
-          message: `${error.message} && ${error.code} `,
-          type: "danger",
-          insert: "top",
-          container: "top-center",
-          dismiss: {
-            duration: 2000,
-            onScreen: true,
-            pauseOnHover: true,
-          },
-        });
+        Swal.fire("error to on subit section");
+        console.log(error.code);
       });
   };
 
@@ -65,10 +44,11 @@ function Register() {
     googleSing()
       .then((result) => {
         console.log(result.user);
+        toast.success("Google Login Done");
       })
       .catch((error) => {
-        console.log(error.message);
-        console.log(error.code);
+        toast.error(error.message);
+        toast.error(error.code);
       });
   };
 

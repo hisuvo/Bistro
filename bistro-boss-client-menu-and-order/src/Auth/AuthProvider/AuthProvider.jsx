@@ -17,6 +17,7 @@ const auth = getAuth(app);
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
   const provider = new GoogleAuthProvider();
 
   // SingUP

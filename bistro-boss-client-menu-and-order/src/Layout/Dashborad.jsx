@@ -14,7 +14,7 @@ import { IoMenu } from "react-icons/io5";
 function Dashborad() {
   return (
     <div className="grid grid-cols-12 gap-4">
-      <div className="hidden md:block md:col-span-3 px-4 py-2 bg-yellow-500 min-h-screen">
+      <div className="hidden overflow-y-auto md:block md:col-span-3 px-4 py-2 bg-yellow-500 max-h-screen">
         <div className="text-center">
           <h1 className="text-2xl uppercase font-bold font-mono">
             Bistro Boss
@@ -91,7 +91,7 @@ function Dashborad() {
           </li>
         </ul>
       </div>
-      <div className="col-span-full md:col-span-9">
+      <div className="col-span-full md:col-span-9 overflow-y-auto max-h-screen">
         <Outlet />
       </div>
     </div>
