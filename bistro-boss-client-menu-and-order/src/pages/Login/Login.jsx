@@ -7,6 +7,7 @@ import {
 import { AuthContext } from "../../Auth/AuthProvider/AuthProvider";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import useAxiosPublice from "../../hooks/useAxiosPublice";
 
 export default function Login() {
   document.title = "Bistro Bosss | Login";
@@ -15,6 +16,7 @@ export default function Login() {
   const { signIn, googleSing } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
+  const axiosPublice = useAxiosPublice();
 
   const from = location.state?.from?.pathname || "/";
 
@@ -56,9 +58,17 @@ export default function Login() {
   const handleGoogleSign = () => {
     // googleSignIn
     googleSing()
-      .then((user) => {
-        console.log(user.user);
-        navigate(from);
+      .then((res) => {
+        console.log(res.user);
+        const userInfo = {
+          name: res.user?.displayName,
+          email: res.user?.email,
+        };
+        // inset userInfo in db
+        axiosPublice.post("/users", userInfo).then((res) => {
+          console.log(res.data);
+          navigate(from);
+        });
       })
       .catch((error) => {
         console.log(error.message);
