@@ -13,10 +13,11 @@ import { NavLink, Outlet } from "react-router-dom";
 import { MdReviews } from "react-icons/md";
 import { RiReservedLine } from "react-icons/ri";
 import { IoMenu } from "react-icons/io5";
-
-const isAdmin = true;
+import useAdmin from "../hooks/useAdmin";
 
 function Dashborad() {
+  const [isAdmin] = useAdmin();
+
   return (
     <div className="grid grid-cols-12 gap-4">
       <div className="hidden overflow-y-auto md:block md:col-span-3 px-4 py-2 bg-yellow-500 max-h-screen">

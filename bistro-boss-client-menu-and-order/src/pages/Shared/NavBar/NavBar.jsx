@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../../../Auth/AuthProvider/AuthProvider";
 import { FaShoppingCart } from "react-icons/fa";
 import useCarts from "../../../hooks/useCarts";
+import { toast } from "sonner";
 
 const NavBar = () => {
   const { user, singOut } = useContext(AuthContext);
@@ -10,12 +11,12 @@ const NavBar = () => {
 
   const handleLogOut = () => {
     singOut()
-      .then((result) => {
-        console.log(result.user);
+      .then(() => {
+        toast.success("Sing Out done");
       })
       .catch((error) => {
-        console.log(error.code);
-        console.log(error.message);
+        toast.error(error.code);
+        toast.error(error.message);
       });
   };
   const navOptions = (

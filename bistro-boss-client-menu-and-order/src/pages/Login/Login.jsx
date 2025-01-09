@@ -59,20 +59,17 @@ export default function Login() {
     // googleSignIn
     googleSing()
       .then((res) => {
-        console.log(res.user);
         const userInfo = {
           name: res.user?.displayName,
           email: res.user?.email,
         };
         // inset userInfo in db
-        axiosPublice.post("/users", userInfo).then((res) => {
-          console.log(res.data);
+        axiosPublice.post("/users", userInfo).then(() => {
           navigate(from);
         });
       })
       .catch((error) => {
-        console.log(error.message);
-        console.log(error.code);
+        toast.error(error.message);
       });
   };
 

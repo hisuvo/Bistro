@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 
 export default function AllUsers() {
   const axiosSecure = useAxiosSecure();
+
   const { data: user = [], refetch } = useQuery({
     queryKey: ["user"],
     queryFn: async () => {
@@ -14,7 +15,7 @@ export default function AllUsers() {
     },
   });
 
-  //   handle make admin
+  //   handle make admin put to db
   const handleMakeAdmin = (id) => {
     // toast start
     Swal.fire({
